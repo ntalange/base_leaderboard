@@ -33,6 +33,11 @@ if 'nft_multiplier' in df.columns:
 # Compute crypto earned as the sum of crypto_paid and crypto_pending
 df['crypto_earned'] = df['crypto_paid'] + df['crypto_pending']
 
+# Replace zeros with a small value (1) for logarithmic scaling
+df['blocks_won'] = df['blocks_won'].replace(0, 1)
+df['crypto_earned'] = df['crypto_earned'].replace(0, 1)
+df['hashes_submitted'] = df['hashes_submitted'].replace(0, 1)
+
 # Display the raw data (without the shortened wallet address)
 st.subheader("Raw Leaderboard Data")
 st.dataframe(df)
@@ -56,12 +61,15 @@ df_chart['short_wallet_addr'] = df_chart['wallet_addr'].apply(
     lambda x: x[:7] + "..." + x[-5:] if len(x) > 12 else x
 )
 
-# Create horizontal bar charts using Altair with logarithmic scale
+# Define log scale domain dynamically
+blocks_max = df_chart['blocks_won'].max()
+crypto_max = df_chart['crypto_earned'].max()
+hashes_max = df_chart['hashes_submitted'].max()
 
 # 1. Blocks Won per Wallet Address
 st.subheader("Blocks Won per Wallet Address")
 blocks_chart = alt.Chart(df_chart).mark_bar().encode(
-    x=alt.X('blocks_won:Q', title='Blocks Won', scale=alt.Scale(type='log')),
+    x=alt.X('blocks_won:Q', title='Blocks Won', scale=alt.Scale(type='log', domain=[1, blocks_max])),
     y=alt.Y('short_wallet_addr:N', sort='-x', title='Wallet Address')
 ).properties(width=700, height=300)
 st.altair_chart(blocks_chart, use_container_width=True)
@@ -69,7 +77,7 @@ st.altair_chart(blocks_chart, use_container_width=True)
 # 2. Crypto Earned per Wallet Address
 st.subheader("Crypto Earned per Wallet Address")
 crypto_chart = alt.Chart(df_chart).mark_bar().encode(
-    x=alt.X('crypto_earned:Q', title='Crypto Earned', scale=alt.Scale(type='log')),
+    x=alt.X('crypto_earned:Q', title='Crypto Earned', scale=alt.Scale(type='log', domain=[1, crypto_max])),
     y=alt.Y('short_wallet_addr:N', sort='-x', title='Wallet Address')
 ).properties(width=700, height=300)
 st.altair_chart(crypto_chart, use_container_width=True)
@@ -77,7 +85,7 @@ st.altair_chart(crypto_chart, use_container_width=True)
 # 3. Hashes Submitted per Wallet Address
 st.subheader("Hashes Submitted per Wallet Address")
 hashes_chart = alt.Chart(df_chart).mark_bar().encode(
-    x=alt.X('hashes_submitted:Q', title='Hashes Submitted', scale=alt.Scale(type='log')),
+    x=alt.X('hashes_submitted:Q', title='Hashes Submitted', scale=alt.Scale(type='log', domain=[1, hashes_max])),
     y=alt.Y('short_wallet_addr:N', sort='-x', title='Wallet Address')
 ).properties(width=700, height=300)
 st.altair_chart(hashes_chart, use_container_width=True)
