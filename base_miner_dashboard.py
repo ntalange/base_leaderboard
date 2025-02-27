@@ -56,12 +56,12 @@ df_chart['short_wallet_addr'] = df_chart['wallet_addr'].apply(
     lambda x: x[:7] + "..." + x[-5:] if len(x) > 12 else x
 )
 
-# Create horizontal bar charts using Altair
+# Create horizontal bar charts using Altair with logarithmic scale
 
 # 1. Blocks Won per Wallet Address
 st.subheader("Blocks Won per Wallet Address")
 blocks_chart = alt.Chart(df_chart).mark_bar().encode(
-    x=alt.X('blocks_won:Q', title='Blocks Won'),
+    x=alt.X('blocks_won:Q', title='Blocks Won', scale=alt.Scale(type='log')),
     y=alt.Y('short_wallet_addr:N', sort='-x', title='Wallet Address')
 ).properties(width=700, height=300)
 st.altair_chart(blocks_chart, use_container_width=True)
@@ -69,7 +69,7 @@ st.altair_chart(blocks_chart, use_container_width=True)
 # 2. Crypto Earned per Wallet Address
 st.subheader("Crypto Earned per Wallet Address")
 crypto_chart = alt.Chart(df_chart).mark_bar().encode(
-    x=alt.X('crypto_earned:Q', title='Crypto Earned'),
+    x=alt.X('crypto_earned:Q', title='Crypto Earned', scale=alt.Scale(type='log')),
     y=alt.Y('short_wallet_addr:N', sort='-x', title='Wallet Address')
 ).properties(width=700, height=300)
 st.altair_chart(crypto_chart, use_container_width=True)
@@ -77,7 +77,7 @@ st.altair_chart(crypto_chart, use_container_width=True)
 # 3. Hashes Submitted per Wallet Address
 st.subheader("Hashes Submitted per Wallet Address")
 hashes_chart = alt.Chart(df_chart).mark_bar().encode(
-    x=alt.X('hashes_submitted:Q', title='Hashes Submitted'),
+    x=alt.X('hashes_submitted:Q', title='Hashes Submitted', scale=alt.Scale(type='log')),
     y=alt.Y('short_wallet_addr:N', sort='-x', title='Wallet Address')
 ).properties(width=700, height=300)
 st.altair_chart(hashes_chart, use_container_width=True)
